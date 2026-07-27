@@ -1,4 +1,4 @@
-﻿using DeliverySystem.Domain.Entities;
+using DeliverySystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeliverySystem.Infrastructure.Persistence
@@ -23,6 +23,14 @@ namespace DeliverySystem.Infrastructure.Persistence
 
         //= جدول التجار
         public DbSet<Merchant> Merchants => Set<Merchant>();
+        public DbSet<Rating> Ratings => Set<Rating>();
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<User> Users => Set<User>();
+        public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+        public DbSet<DeliveryAgent> DeliveryAgents => Set<DeliveryAgent>();
+        public DbSet<Coupon> Coupons => Set<Coupon>();
+        public DbSet<Address> Addresses => Set<Address>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
