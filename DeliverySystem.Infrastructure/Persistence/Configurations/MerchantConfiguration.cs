@@ -1,4 +1,5 @@
 ﻿using DeliverySystem.Domain.Entities;
+using DeliverySystem.Infrastructure.Persistence.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,13 +10,9 @@ namespace DeliverySystem.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Merchant> builder)
         {
             builder.HasKey(m => m.Id);
-
-            builder.Property(m => m.Name)
-                   .IsRequired()
-                   .HasMaxLength(150);
-
-            builder.Property(m => m.Phone)
-                   .HasMaxLength(20);
+            builder.HasOne<ApplicationUser>()
+            .WithOne()
+            .HasForeignKey<Merchant>(e => e.UserId);
         }
     }
 }

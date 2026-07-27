@@ -12,7 +12,8 @@ namespace DeliverySystem.Domain.Entities
         public int? DeliveryAgentId { get; set; }
         public int AddressId { get; set; }
         public int? CouponId { get; set; }
-
+        // foreign key of ApplicationUser 
+        public string UserId { get; set; }=default!;
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public decimal TotalAmount { get; set; }
         public decimal DiscountAmount { get; set; }

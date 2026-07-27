@@ -1,7 +1,9 @@
 using DeliverySystem.API.Middlewares;
 using DeliverySystem.Application.Interfaces;
-using DeliverySystem.Application.Services; 
+using DeliverySystem.Application.Services;
+using DeliverySystem.Infrastructure;
 using DeliverySystem.Infrastructure.Persistence;
+using DeliverySystem.Infrastructure.Persistence.Identity;
 using DeliverySystem.Infrastructure.Repositories;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +18,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//== DbContext configuration
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+// Dependence in injections
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.Configure<AdminInfoOption>(builder.Configuration.GetSection("AdminInfo"));
 
 //== FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<DeliverySystem.Application.Validators.CreateProductDtoValidator>();
