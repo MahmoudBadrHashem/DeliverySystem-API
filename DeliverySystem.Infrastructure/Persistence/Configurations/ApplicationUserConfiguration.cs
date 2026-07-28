@@ -29,6 +29,9 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         .HasForeignKey(e => e.UserId)
         .OnDelete(DeleteBehavior.Cascade);
 
-
+        builder.HasMany(e => e.Notifications)
+        .WithOne()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
     }
 }

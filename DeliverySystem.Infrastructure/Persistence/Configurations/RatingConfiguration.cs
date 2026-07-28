@@ -1,4 +1,4 @@
-﻿using DeliverySystem.Domain.Entities;
+using DeliverySystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,7 +15,7 @@ namespace DeliverySystem.Infrastructure.Persistence.Configurations
             builder.HasOne(r => r.Order)
                    .WithMany(o => o.Ratings)
                    .HasForeignKey(r => r.OrderId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(r => r.Customer)
                    .WithMany()

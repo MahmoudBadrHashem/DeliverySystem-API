@@ -31,6 +31,7 @@ namespace DeliverySystem.Infrastructure.Persistence
         public DbSet<DeliveryAgent> DeliveryAgents => Set<DeliveryAgent>();
         public DbSet<Coupon> Coupons => Set<Coupon>();
         public DbSet<Address> Addresses => Set<Address>();
+        public DbSet<Notification> Notifications => Set<Notification>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

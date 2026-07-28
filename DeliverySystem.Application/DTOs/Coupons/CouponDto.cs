@@ -1,6 +1,8 @@
-namespace DeliverySystem.Domain.Entities
+using System;
+
+namespace DeliverySystem.Application.DTOs.Coupons
 {
-    public class Coupon
+    public class CouponDto
     {
         public int Id { get; set; }
         public string Code { get; set; } = string.Empty;
@@ -8,7 +10,7 @@ namespace DeliverySystem.Domain.Entities
         public bool IsPercentage { get; set; }
         public DateTime ExpiryDate { get; set; }
         public int? UsageLimit { get; set; }
-        public int TimesUsed { get; set; } = 0;
-        public bool IsActive { get; set; } = true;
+        public int TimesUsed { get; set; }
+        public bool IsActive { get; set; }
     }
 }
