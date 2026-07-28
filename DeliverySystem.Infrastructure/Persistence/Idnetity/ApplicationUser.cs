@@ -16,6 +16,7 @@ public class ApplicationUser:IdentityUser
 
     public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
 
-
     public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

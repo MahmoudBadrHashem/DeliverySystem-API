@@ -1,11 +1,7 @@
-namespace DeliverySystem.Domain.Entities
+namespace DeliverySystem.Application.DTOs.Addresses
 {
-    public class Address
+    public class CreateAddressDto
     {
-        public int Id { get; set; }
-        // foreign key of ApplicationUser 
-        public string UserId { get; set; } = default!;
-        
         public string StreetName { get; set; } = string.Empty;
         public string BuildingNumber { get; set; } = string.Empty;
         public string? FloorNumber { get; set; }
