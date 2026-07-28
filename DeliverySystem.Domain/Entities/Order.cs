@@ -7,7 +7,7 @@ namespace DeliverySystem.Domain.Entities
     {
         public int Id { get; set; }
 
-        public int CustomerId { get; set; }
+        public string CustomerId { get; set; }
         public int BranchId { get; set; }
         public int? DeliveryAgentId { get; set; }
         public int AddressId { get; set; }

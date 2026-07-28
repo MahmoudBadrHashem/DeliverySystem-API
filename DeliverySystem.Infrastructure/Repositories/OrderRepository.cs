@@ -9,10 +9,10 @@ namespace DeliverySystem.Infrastructure.Repositories
     {
         public OrderRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Order>> GetOrdersByCustomerAsync(int customerId) =>
-            await _context.Orders
-                .Where(o => o.CustomerId == customerId)
-                .ToListAsync();
+        public async Task<IEnumerable<Order>> GetOrdersByCustomerAsync(string customerId) =>
+    await _context.Orders
+        .Where(o => o.CustomerId == customerId)
+        .ToListAsync();
 
         public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(int status) =>
             await _context.Orders
