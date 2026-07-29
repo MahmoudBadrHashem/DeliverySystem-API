@@ -13,7 +13,7 @@ namespace DeliverySystem.Infrastructure.Persistence
         {
         }
 
-       
+
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Branch> Branches => Set<Branch>();
@@ -26,18 +26,16 @@ namespace DeliverySystem.Infrastructure.Persistence
         public DbSet<DeliveryAgent> DeliveryAgents => Set<DeliveryAgent>();
         public DbSet<Coupon> Coupons => Set<Coupon>();
         public DbSet<Address> Addresses => Set<Address>();
-<<<<<<< HEAD
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-=======
         public DbSet<Notification> Notifications => Set<Notification>();
->>>>>>> origin/main
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-          
+
             base.OnModelCreating(modelBuilder);
 
-          
+
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
     }

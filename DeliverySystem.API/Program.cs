@@ -46,7 +46,7 @@ builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 var app = builder.Build();
-
+await DataService.DataSeed(app.Services);
 //== Middleware Pipeline 
 
 app.UseMiddleware<GlobalExceptionMiddleware>();

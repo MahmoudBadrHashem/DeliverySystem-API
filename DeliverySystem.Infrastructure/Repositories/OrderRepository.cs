@@ -11,7 +11,7 @@ namespace DeliverySystem.Infrastructure.Repositories
 
         public async Task<IEnumerable<Order>> GetOrdersByCustomerAsync(string customerId) =>
     await _context.Orders
-        .Where(o => o.CustomerId == customerId)
+        .Where(o => o.UserId == customerId)
         .ToListAsync();
 
         public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(int status) =>

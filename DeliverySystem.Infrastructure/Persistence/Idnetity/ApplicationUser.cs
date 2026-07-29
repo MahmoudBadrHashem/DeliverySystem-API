@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DeliverySystem.Infrastructure.Persistence.Identity;
 
-public class ApplicationUser:IdentityUser
+public class ApplicationUser : IdentityUser
 {
-     public string FullName { get; set; } = null!;
+    public string FullName { get; set; } = null!;
 
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public ICollection<CouponUsage> CouponUsage { get; set; } = new List<CouponUsage>();
 
     public ICollection<Address> Addresses { get; set; } = new List<Address>();
 

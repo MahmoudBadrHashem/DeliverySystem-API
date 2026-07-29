@@ -33,5 +33,10 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         .WithOne()
         .HasForeignKey(e => e.UserId)
         .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(e => e.CouponUsage)
+        .WithOne()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
     }
 }
