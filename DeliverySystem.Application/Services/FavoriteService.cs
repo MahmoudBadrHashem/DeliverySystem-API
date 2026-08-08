@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DeliverySystem.Application.DTOs.Favorites;
 using DeliverySystem.Application.Interfaces;
@@ -16,9 +17,9 @@ namespace DeliverySystem.Application.Services
             _favoriteRepository = favoriteRepository;
         }
 
-        public async Task<IEnumerable<FavoriteDto>> GetCustomerFavoritesAsync(int customerId)
+        public async Task<IEnumerable<FavoriteDto>> GetCustomerFavoritesAsync(int customerId, CancellationToken cancellationToken = default)
         {
-            var favorites = await _favoriteRepository.GetCustomerFavoritesAsync(customerId);
+            var favorites = await _favoriteRepository.GetCustomerFavoritesAsync(customerId, cancellationToken);
 
             return favorites.Select(f => new FavoriteDto
             {
@@ -31,9 +32,9 @@ namespace DeliverySystem.Application.Services
             });
         }
 
-        public async Task<bool> AddToFavoritesAsync(CreateFavoriteDto dto)
+        public async Task<bool> AddToFavoritesAsync(CreateFavoriteDto dto, CancellationToken cancellationToken = default)
         {
-            var exists = await _favoriteRepository.ExistsAsync(dto.CustomerId, dto.ProductId);
+            var exists = await _favoriteRepository.ExistsAsync(dto.CustomerId, dto.ProductId, cancellationToken);
             if (exists) return false;
 
             var favorite = new Favorite
@@ -43,13 +44,13 @@ namespace DeliverySystem.Application.Services
                 CreatedDate = System.DateTime.UtcNow
             };
 
-            await _favoriteRepository.AddAsync(favorite);
+            await _favoriteRepository.AddAsync(favorite, cancellationToken);
             return true;
         }
 
-        public async Task<bool> RemoveFromFavoritesAsync(int customerId, int productId)
+        public async Task<bool> RemoveFromFavoritesAsync(int customerId, int productId, CancellationToken cancellationToken = default)
         {
-            return await _favoriteRepository.RemoveAsync(customerId, productId);
+            return await _favoriteRepository.RemoveAsync(customerId, productId, cancellationToken);
         }
     }
 }

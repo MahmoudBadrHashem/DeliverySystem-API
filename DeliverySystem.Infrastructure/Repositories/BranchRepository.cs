@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DeliverySystem.Application.Interfaces;
@@ -15,9 +16,9 @@ namespace DeliverySystem.Infrastructure.Repositories
         }
 
         //= IDوظيفتها انها بتدخل تدور في الداتا وتجيب  كل فروع التاجر ده بناءعلى ال  
-        public async Task<IEnumerable<Branch>> GetByMerchantIdAsync(int merchantId) =>
+        public async Task<IEnumerable<Branch>> GetByMerchantIdAsync(int merchantId, CancellationToken cancellationToken = default) =>
             await _context.Branches
                 .Where(b => b.MerchantId == merchantId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
     }
 }

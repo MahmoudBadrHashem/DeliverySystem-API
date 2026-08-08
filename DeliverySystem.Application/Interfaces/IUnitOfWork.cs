@@ -1,6 +1,6 @@
-﻿namespace DeliverySystem.Application.Interfaces;
+namespace DeliverySystem.Application.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    Task<int> SaveChangesAsync();
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

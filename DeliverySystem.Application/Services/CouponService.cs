@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DeliverySystem.Application.DTOs.Coupons;
 using DeliverySystem.Application.Interfaces;
@@ -17,9 +18,9 @@ namespace DeliverySystem.Application.Services
             _couponRepository = couponRepository;
         }
 
-        public async Task<IEnumerable<CouponDto>> GetAllCouponsAsync()
+        public async Task<IEnumerable<CouponDto>> GetAllCouponsAsync(CancellationToken cancellationToken = default)
         {
-            var coupons = await _couponRepository.GetAllAsync();
+            var coupons = await _couponRepository.GetAllAsync(cancellationToken);
             return coupons.Select(c => new CouponDto
             {
                 Id = c.Id,
@@ -33,9 +34,9 @@ namespace DeliverySystem.Application.Services
             }).ToList();
         }
 
-        public async Task<CouponDto?> GetCouponByIdAsync(int id)
+        public async Task<CouponDto?> GetCouponByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var c = await _couponRepository.GetByIdAsync(id);
+            var c = await _couponRepository.GetByIdAsync(id, cancellationToken);
             if (c == null) return null;
 
             return new CouponDto
@@ -51,9 +52,9 @@ namespace DeliverySystem.Application.Services
             };
         }
 
-        public async Task<CouponDto?> GetCouponByCodeAsync(string code)
+        public async Task<CouponDto?> GetCouponByCodeAsync(string code, CancellationToken cancellationToken = default)
         {
-            var c = await _couponRepository.GetByCodeAsync(code);
+            var c = await _couponRepository.GetByCodeAsync(code, cancellationToken);
             if (c == null) return null;
 
             return new CouponDto
@@ -69,7 +70,7 @@ namespace DeliverySystem.Application.Services
             };
         }
 
-        public async Task<int> CreateCouponAsync(CreateCouponDto dto)
+        public async Task<int> CreateCouponAsync(CreateCouponDto dto, CancellationToken cancellationToken = default)
         {
             var coupon = new Coupon
             {
@@ -82,13 +83,13 @@ namespace DeliverySystem.Application.Services
                 IsActive = true
             };
 
-            await _couponRepository.AddAsync(coupon);
+            await _couponRepository.AddAsync(coupon, cancellationToken);
             return coupon.Id;
         }
 
-        public async Task<bool> UpdateCouponAsync(int id, UpdateCouponDto dto)
+        public async Task<bool> UpdateCouponAsync(int id, UpdateCouponDto dto, CancellationToken cancellationToken = default)
         {
-            var c = await _couponRepository.GetByIdAsync(id);
+            var c = await _couponRepository.GetByIdAsync(id, cancellationToken);
             if (c == null) return false;
 
             c.Code = dto.Code.ToUpperInvariant();
@@ -98,22 +99,22 @@ namespace DeliverySystem.Application.Services
             c.UsageLimit = dto.UsageLimit;
             c.IsActive = dto.IsActive;
 
-            await _couponRepository.UpdateAsync(c);
+            await _couponRepository.UpdateAsync(c, cancellationToken);
             return true;
         }
 
-        public async Task<bool> DeleteCouponAsync(int id)
+        public async Task<bool> DeleteCouponAsync(int id, CancellationToken cancellationToken = default)
         {
-            var c = await _couponRepository.GetByIdAsync(id);
+            var c = await _couponRepository.GetByIdAsync(id, cancellationToken);
             if (c == null) return false;
 
-            await _couponRepository.DeleteAsync(c);
+            await _couponRepository.DeleteAsync(c, cancellationToken);
             return true;
         }
 
-        public async Task<bool> ValidateCouponAsync(string code)
+        public async Task<bool> ValidateCouponAsync(string code, CancellationToken cancellationToken = default)
         {
-            var c = await _couponRepository.GetByCodeAsync(code);
+            var c = await _couponRepository.GetByCodeAsync(code, cancellationToken);
             if (c == null) return false;
 
             // Check if coupon is active, not expired, and usage limit is not exceeded

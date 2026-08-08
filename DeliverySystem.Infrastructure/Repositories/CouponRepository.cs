@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DeliverySystem.Application.Interfaces;
@@ -12,10 +13,10 @@ namespace DeliverySystem.Infrastructure.Repositories
         {
         }
 
-        public async Task<Coupon?> GetByCodeAsync(string code)
+        public async Task<Coupon?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
         {
             return await _context.Coupons
-                .FirstOrDefaultAsync(c => c.Code == code.ToUpperInvariant());
+                .FirstOrDefaultAsync(c => c.Code == code.ToUpperInvariant(), cancellationToken);
         }
     }
 }
