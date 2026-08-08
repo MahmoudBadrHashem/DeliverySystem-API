@@ -1,4 +1,4 @@
-﻿using DeliverySystem.Domain.Entities;
+using DeliverySystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,11 +18,7 @@ namespace DeliverySystem.Infrastructure.Persistence.Configurations
                             .HasForeignKey(o => o.BranchId)
                             .OnDelete(DeleteBehavior.Restrict);
 
-                     builder.HasOne(o => o.DeliveryAgent)
-                            .WithMany()
-                            .HasForeignKey(o => o.DeliveryAgentId)
-                            .OnDelete(DeleteBehavior.Restrict)
-                            .IsRequired(false);
+
 
                      builder.HasOne(o => o.Address)
                             .WithMany()

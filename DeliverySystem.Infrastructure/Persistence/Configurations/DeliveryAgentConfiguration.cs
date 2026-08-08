@@ -13,5 +13,11 @@ public class DeliveryAgentConfiguration : IEntityTypeConfiguration<DeliveryAgent
         builder.HasOne<ApplicationUser>()
         .WithOne()
         .HasForeignKey<DeliveryAgent>(e => e.UserId);
+
+        builder.HasMany(da => da.Orders)
+        .WithOne(o => o.DeliveryAgent)
+        .HasForeignKey(o => o.DeliveryAgentId)
+        .OnDelete(DeleteBehavior.Restrict)
+        .IsRequired(false);
     }
 }
