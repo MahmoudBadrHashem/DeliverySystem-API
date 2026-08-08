@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DeliverySystem.Application.Interfaces;
@@ -14,12 +15,12 @@ namespace DeliverySystem.Infrastructure.Repositories
         {
         }
 
-        public async Task<IEnumerable<Notification>> GetByUserIdAsync(string userId)
+        public async Task<IEnumerable<Notification>> GetByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             return await _context.Notifications
                 .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedAt)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
     }
 }

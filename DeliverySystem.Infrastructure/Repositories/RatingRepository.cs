@@ -9,14 +9,14 @@ namespace DeliverySystem.Infrastructure.Repositories
     {
         public RatingRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Rating>> GetRatingsByMerchantAsync(int merchantId) =>
+        public async Task<IEnumerable<Rating>> GetRatingsByMerchantAsync(int merchantId, CancellationToken cancellationToken = default) =>
             await _context.Ratings
                 .Where(r => r.MerchantId == merchantId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
-        public async Task<IEnumerable<Rating>> GetRatingsByDeliveryAgentAsync(int deliveryAgentId) =>
+        public async Task<IEnumerable<Rating>> GetRatingsByDeliveryAgentAsync(int deliveryAgentId, CancellationToken cancellationToken = default) =>
             await _context.Ratings
                 .Where(r => r.DeliveryAgentId == deliveryAgentId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
     }
 }

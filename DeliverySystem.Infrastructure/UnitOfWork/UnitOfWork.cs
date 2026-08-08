@@ -1,4 +1,4 @@
-﻿using DeliverySystem.Application.Interfaces;
+using DeliverySystem.Application.Interfaces;
 using DeliverySystem.Infrastructure.Persistence;
 
 namespace DeliverySystem.Infrastructure;
@@ -12,9 +12,9 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
     }
 
-    public async Task<int> SaveChangesAsync()
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SaveChangesAsync();
+        return await _context.SaveChangesAsync(cancellationToken);
     }
 
     public void Dispose()

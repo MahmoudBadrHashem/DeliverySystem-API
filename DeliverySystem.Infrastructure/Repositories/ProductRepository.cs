@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DeliverySystem.Application.Interfaces;
@@ -14,16 +15,16 @@ namespace DeliverySystem.Infrastructure.Repositories
         }
 
         //= دي بنعملها عشان الميثود العادية بتجيب المنتج لوحده من غير تفاصيله  Override ال
-        public override async Task<IEnumerable<Product>> GetAllAsync() =>
+        public override async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default) =>
             await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Branch)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         //= هنا لما نيجي نطلب منتج معين بنخليه يجيب معاهم التصنيف والفرع بتاعه عشان الداتا تطلع كاملة للعميل ومش ناقصة اي حاجه 
-        public override async Task<Product?> GetByIdAsync(int id) =>
+        public override async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
             await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Branch)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 }
