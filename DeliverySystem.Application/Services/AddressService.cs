@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DeliverySystem.Application.DTOs.Addresses;
 using DeliverySystem.Application.Interfaces;
@@ -16,7 +17,7 @@ namespace DeliverySystem.Application.Services
             _addressRepository = addressRepository;
         }
 
-        public async Task<IEnumerable<AddressDto>> GetAddressesByUserIdAsync(string userId)
+        public async Task<IEnumerable<AddressDto>> GetAddressesByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             var addresses = await _addressRepository.GetAllAsync();
             return addresses
@@ -37,11 +38,11 @@ namespace DeliverySystem.Application.Services
                 .ToList();
         }
 
-        public async Task<AddressDto?> GetAddressByIdAsync(int id)
+        public async Task<AddressDto?> GetAddressByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var a = await _addressRepository.GetByIdAsync(id);
             if (a == null) return null;
-            
+
             return new AddressDto
             {
                 Id = a.Id,
@@ -57,7 +58,7 @@ namespace DeliverySystem.Application.Services
             };
         }
 
-        public async Task<int> CreateAddressAsync(string userId, CreateAddressDto dto)
+        public async Task<int> CreateAddressAsync(string userId, CreateAddressDto dto, CancellationToken cancellationToken = default)
         {
             var address = new Address
             {
@@ -76,7 +77,7 @@ namespace DeliverySystem.Application.Services
             return address.Id;
         }
 
-        public async Task<bool> UpdateAddressAsync(int id, string userId, UpdateAddressDto dto)
+        public async Task<bool> UpdateAddressAsync(int id, string userId, UpdateAddressDto dto, CancellationToken cancellationToken = default)
         {
             var a = await _addressRepository.GetByIdAsync(id);
             if (a == null || a.UserId != userId) return false;
@@ -94,7 +95,7 @@ namespace DeliverySystem.Application.Services
             return true;
         }
 
-        public async Task<bool> DeleteAddressAsync(int id, string userId)
+        public async Task<bool> DeleteAddressAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
             var a = await _addressRepository.GetByIdAsync(id);
             if (a == null || a.UserId != userId) return false;
