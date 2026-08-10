@@ -307,8 +307,7 @@ namespace DeliverySystem.Infrastructure.Migrations
                         name: "FK_RefreshTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
