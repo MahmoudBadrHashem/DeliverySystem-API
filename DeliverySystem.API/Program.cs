@@ -41,8 +41,8 @@ builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-    builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-    builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 //== Dependency Injection for Repositories
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -57,6 +57,10 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 
 var app = builder.Build();
 await DataService.DataSeed(app.Services);
