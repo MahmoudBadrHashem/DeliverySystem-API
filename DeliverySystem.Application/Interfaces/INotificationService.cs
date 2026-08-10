@@ -12,5 +12,7 @@ namespace DeliverySystem.Application.Interfaces
         Task<bool> MarkAsReadAsync(int id, string userId, CancellationToken cancellationToken = default);
         Task<bool> MarkAllAsReadAsync(string userId, CancellationToken cancellationToken = default);
         Task<bool> DeleteNotificationAsync(int id, string userId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<NotificationDto>> GetAllNotificationsAsync(CancellationToken cancellationToken = default);
+        Task<bool> DeleteNotificationAsync(int id, CancellationToken cancellationToken = default);
     }
 }

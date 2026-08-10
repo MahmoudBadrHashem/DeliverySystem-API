@@ -16,6 +16,13 @@ namespace DeliverySystem.API.Controllers
             _addressService = addressService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var addresses = await _addressService.GetAllAddressesAsync();
+            return Ok(addresses);
+        }
+
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUserId(string userId)
         {
@@ -62,6 +69,16 @@ namespace DeliverySystem.API.Controllers
             var result = await _addressService.DeleteAddressAsync(id, userId);
             if (!result)
                 return NotFound(new { message = "العنوان غير موجود أو لا ينتمي لهذا المستخدم" });
+
+            return Ok(new { message = "تم حذف العنوان بنجاح" });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGlobal(int id)
+        {
+            var result = await _addressService.DeleteAddressAsync(id);
+            if (!result)
+                return NotFound(new { message = "العنوان غير موجود" });
 
             return Ok(new { message = "تم حذف العنوان بنجاح" });
         }

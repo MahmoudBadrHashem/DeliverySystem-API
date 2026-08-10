@@ -9,10 +9,16 @@ public class UnitOfWork : IUnitOfWork
     private readonly ApplicationDbContext _context;
 
     public IRefreshTokenRepository RefreshToken { get; private set; }
+    public IAddressRepository Address { get; private set; }
+    public ICouponRepository Coupon { get; private set; }
+    public INotificationRepository Notification { get; private set; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
         RefreshToken = new RefreshTokenRepository(context);
+        Address = new AddressRepository(context);
+        Coupon = new CouponRepository(context);
+        Notification = new NotificationRepository(context);
         _context = context;
     }
 

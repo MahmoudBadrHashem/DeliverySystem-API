@@ -11,16 +11,16 @@ namespace DeliverySystem.Application.Services
 {
     public class NotificationService : INotificationService
     {
-        private readonly INotificationRepository _notificationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public NotificationService(INotificationRepository notificationRepository)
+        public NotificationService(IUnitOfWork unitOfWork)
         {
-            _notificationRepository = notificationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<NotificationDto>> GetNotificationsByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
-            var notifications = await _notificationRepository.GetByUserIdAsync(userId, cancellationToken);
+            var notifications = await _unitOfWork.Notification.GetByUserIdAsync(userId, cancellationToken);
             return notifications.Select(n => new NotificationDto
             {
                 Id = n.Id,
@@ -43,23 +43,25 @@ namespace DeliverySystem.Application.Services
                 IsRead = false
             };
 
-            await _notificationRepository.AddAsync(n, cancellationToken);
+            await _unitOfWork.Notification.AddAsync(n, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return n.Id;
         }
 
         public async Task<bool> MarkAsReadAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
-            var n = await _notificationRepository.GetByIdAsync(id, cancellationToken);
+            var n = await _unitOfWork.Notification.GetByIdAsync(id, cancellationToken);
             if (n == null || n.UserId != userId) return false;
 
             n.IsRead = true;
-            await _notificationRepository.UpdateAsync(n, cancellationToken);
+            await _unitOfWork.Notification.UpdateAsync(n, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
 
         public async Task<bool> MarkAllAsReadAsync(string userId, CancellationToken cancellationToken = default)
         {
-            var notifications = await _notificationRepository.GetByUserIdAsync(userId, cancellationToken);
+            var notifications = await _unitOfWork.Notification.GetByUserIdAsync(userId, cancellationToken);
             var unread = notifications.Where(n => !n.IsRead).ToList();
             
             if (!unread.Any()) return true;
@@ -67,18 +69,44 @@ namespace DeliverySystem.Application.Services
             foreach (var n in unread)
             {
                 n.IsRead = true;
-                await _notificationRepository.UpdateAsync(n, cancellationToken);
+                await _unitOfWork.Notification.UpdateAsync(n, cancellationToken);
             }
 
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
 
         public async Task<bool> DeleteNotificationAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
-            var n = await _notificationRepository.GetByIdAsync(id, cancellationToken);
+            var n = await _unitOfWork.Notification.GetByIdAsync(id, cancellationToken);
             if (n == null || n.UserId != userId) return false;
 
-            await _notificationRepository.DeleteAsync(n, cancellationToken);
+            await _unitOfWork.Notification.DeleteAsync(n, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+
+        public async Task<IEnumerable<NotificationDto>> GetAllNotificationsAsync(CancellationToken cancellationToken = default)
+        {
+            var notifications = await _unitOfWork.Notification.GetAllAsync(cancellationToken);
+            return notifications.Select(n => new NotificationDto
+            {
+                Id = n.Id,
+                Title = n.Title,
+                Message = n.Message,
+                CreatedAt = n.CreatedAt,
+                IsRead = n.IsRead,
+                UserId = n.UserId
+            }).ToList();
+        }
+
+        public async Task<bool> DeleteNotificationAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var n = await _unitOfWork.Notification.GetByIdAsync(id, cancellationToken);
+            if (n == null) return false;
+
+            await _unitOfWork.Notification.DeleteAsync(n, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
     }

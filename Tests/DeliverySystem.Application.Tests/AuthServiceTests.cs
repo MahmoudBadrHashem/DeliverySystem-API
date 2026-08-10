@@ -1,9 +1,12 @@
 using DeliverySystem.Application.DTOs.ApplicationUsers;
 using DeliverySystem.Application.Interfaces;
 using DeliverySystem.Application.Services;
+using DeliverySystem.Application.services;
 using DeliverySystem.Domain.Common;
+using DeliverySystem.Domain.Entities;
 using FluentAssertions;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -62,7 +65,7 @@ public class AuthServiceTests
 
         result.Should().NotBeNull();
         result.UserName.Should().Be("testuser");
-        result.UserId.Should().Be("user-123");
+        result.userId.Should().Be("user-123");
     }
 
     [Fact]

@@ -16,6 +16,13 @@ namespace DeliverySystem.API.Controllers
             _notificationService = notificationService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var notifications = await _notificationService.GetAllNotificationsAsync();
+            return Ok(notifications);
+        }
+
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUserId(string userId)
         {
@@ -56,6 +63,16 @@ namespace DeliverySystem.API.Controllers
             var result = await _notificationService.DeleteNotificationAsync(id, userId);
             if (!result)
                 return NotFound(new { message = "الإشعار غير موجود أو لا ينتمي لهذا المستخدم" });
+
+            return Ok(new { message = "تم حذف الإشعار بنجاح" });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGlobal(int id)
+        {
+            var result = await _notificationService.DeleteNotificationAsync(id);
+            if (!result)
+                return NotFound(new { message = "الإشعار غير موجود" });
 
             return Ok(new { message = "تم حذف الإشعار بنجاح" });
         }

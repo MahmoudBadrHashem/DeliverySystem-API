@@ -12,5 +12,7 @@ namespace DeliverySystem.Application.Interfaces
         Task<int> CreateAddressAsync(string userId, CreateAddressDto dto, CancellationToken cancellationToken = default);
         Task<bool> UpdateAddressAsync(int id, string userId, UpdateAddressDto dto, CancellationToken cancellationToken = default);
         Task<bool> DeleteAddressAsync(int id, string userId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<AddressDto>> GetAllAddressesAsync(CancellationToken cancellationToken = default);
+        Task<bool> DeleteAddressAsync(int id, CancellationToken cancellationToken = default);
     }
 }
