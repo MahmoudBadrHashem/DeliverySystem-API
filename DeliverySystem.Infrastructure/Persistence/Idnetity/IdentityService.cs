@@ -52,11 +52,58 @@ public class IdentityService : IDentityService
         return new Result(false, result.Errors.Select(e => new Errors(e.Code, e.Description)));
     }
 
+    public async Task<string> GeneratePasswordResetTokenAsync(string email, CancellationToken cancellationToken = default)
+    {
+        var applicationUser = await _userManager.FindByEmailAsync(email);
+        if (applicationUser is null)
+            throw new Exception("User Not Found ");
+        string token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
+        return token;
+    }
+    public async Task<Result> ResetPasswordAsync(string email, string token, string newPassword, CancellationToken cancellationToken = default)
+    {
+        var applicationUser = await _userManager.FindByEmailAsync(email);
+        if (applicationUser is null)
+            throw new Exception("User Not Found ");
+        var result = await _userManager.ResetPasswordAsync(applicationUser, token, newPassword);
+        if (result.Succeeded)
+        {
+            return new Result(true);
+        }
+        return new Result(false, result.Errors.Select(e => new Errors(e.Code, e.Description)));
+    }
+    public async Task<Result> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default)
+    {
+        var applicationUser = await _userManager.FindByIdAsync(userId);
+        if (applicationUser is null)
+            throw new Exception("User Not Found ");
+        var result = await _userManager.ChangePasswordAsync(applicationUser, currentPassword, newPassword);
+        if (result.Succeeded)
+        {
+            return new Result(true);
+        }
+        return new Result(false, result.Errors.Select(e => new Errors(e.Code, e.Description)));
+    }
+
     public async Task<string?> GetUserNameAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
 
         return user?.UserName;
+    }
+
+    public async Task<string?> GetUserIdByUserNameAsync(string userName, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByNameAsync(userName);
+
+        return user?.Id;
+    }
+
+    public async Task<string?> GetFullNameAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        return user?.FullName;
     }
 
     public async Task<bool> IsInRoleAsync(string userId, string role)

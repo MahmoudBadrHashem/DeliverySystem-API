@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DeliverySystem.Infrastructure.Persistence.Identity;
+namespace DeliverySystem.Domain.Entities;
 
 public class RefreshToken
 {
@@ -13,5 +13,4 @@ public class RefreshToken
     public bool IsActive => Revoked == null && !IsExpired;
     [ForeignKey("User")]
     public string UserId { get; set; } = default!;
-    public ApplicationUser User { get; set; } = default!;
 }
