@@ -3,7 +3,7 @@ using DeliverySystem.Application.Interfaces;
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace DeliverySystem.Application.services;
+namespace DeliverySystem.Application.Services;
 
 public class AuthService : IAuthService
 {

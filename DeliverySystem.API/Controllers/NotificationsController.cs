@@ -1,6 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using DeliverySystem.Application.DTOs.Notifications;
 using DeliverySystem.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeliverySystem.API.Controllers
@@ -16,6 +18,7 @@ namespace DeliverySystem.API.Controllers
             _notificationService = notificationService;
         }
 
+        [Authorize]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUserId(string userId)
         {
@@ -23,6 +26,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(notifications);
         }
 
+        [Authorize]
         [HttpPost("user/{userId}")]
         public async Task<IActionResult> Create(string userId, [FromBody] CreateNotificationDto dto)
         {
@@ -33,6 +37,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(new { message = "تم إضافة الإشعار بنجاح", id });
         }
 
+        [Authorize]
         [HttpPut("mark-read/{id}/user/{userId}")]
         public async Task<IActionResult> MarkAsRead(int id, string userId)
         {
@@ -43,6 +48,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(new { message = "تم تحديد الإشعار كمقروء" });
         }
 
+        [Authorize]
         [HttpPut("mark-all-read/user/{userId}")]
         public async Task<IActionResult> MarkAllAsRead(string userId)
         {
@@ -50,6 +56,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(new { message = "تم تحديد جميع الإشعارات كمقروءة" });
         }
 
+        [Authorize]
         [HttpDelete("{id}/user/{userId}")]
         public async Task<IActionResult> Delete(int id, string userId)
         {

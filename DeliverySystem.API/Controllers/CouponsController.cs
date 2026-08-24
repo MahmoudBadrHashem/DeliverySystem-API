@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using DeliverySystem.Application.DTOs.Coupons;
 using DeliverySystem.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeliverySystem.API.Controllers
@@ -43,6 +44,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(coupon);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCouponDto dto)
         {
@@ -53,6 +55,7 @@ namespace DeliverySystem.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id }, new { message = "تم إضافة كود الخصم بنجاح", id });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCouponDto dto)
         {
@@ -66,6 +69,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(new { message = "تم تعديل كود الخصم بنجاح" });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -85,6 +89,25 @@ namespace DeliverySystem.API.Controllers
 
             var coupon = await _couponService.GetCouponByCodeAsync(code);
             return Ok(new { isValid = true, message = "كود الخصم صالح للاستخدام", coupon });
+        }
+
+        [Authorize]
+        [HttpPost("apply/{code}")]
+        public async Task<IActionResult> Apply(string code)
+        {
+            var coupon = await _couponService.GetCouponByCodeAsync(code);
+            if (coupon == null)
+                return NotFound(new { message = "كود الخصم غير موجود" });
+
+            var isValid = await _couponService.ValidateCouponAsync(code);
+            if (!isValid)
+                return BadRequest(new { message = "كود الخصم غير صالح أو منتهي الصلاحية" });
+
+            var applied = await _couponService.ApplyCouponAsync(coupon.Id);
+            if (!applied)
+                return BadRequest(new { message = "فشل تطبيق كود الخصم" });
+
+            return Ok(new { message = "تم تطبيق كود الخصم بنجاح", coupon });
         }
     }
 }

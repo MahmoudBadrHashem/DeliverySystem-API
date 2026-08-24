@@ -12,10 +12,12 @@ namespace DeliverySystem.Application.Services
     public class CouponService : ICouponService
     {
         private readonly ICouponRepository _couponRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CouponService(ICouponRepository couponRepository)
+        public CouponService(ICouponRepository couponRepository, IUnitOfWork unitOfWork)
         {
             _couponRepository = couponRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<CouponDto>> GetAllCouponsAsync(CancellationToken cancellationToken = default)
@@ -84,6 +86,7 @@ namespace DeliverySystem.Application.Services
             };
 
             await _couponRepository.AddAsync(coupon, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return coupon.Id;
         }
 
@@ -100,6 +103,7 @@ namespace DeliverySystem.Application.Services
             c.IsActive = dto.IsActive;
 
             await _couponRepository.UpdateAsync(c, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
 
@@ -109,6 +113,7 @@ namespace DeliverySystem.Application.Services
             if (c == null) return false;
 
             await _couponRepository.DeleteAsync(c, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
 
@@ -117,11 +122,25 @@ namespace DeliverySystem.Application.Services
             var c = await _couponRepository.GetByCodeAsync(code, cancellationToken);
             if (c == null) return false;
 
-            // Check if coupon is active, not expired, and usage limit is not exceeded
             if (!c.IsActive) return false;
             if (c.ExpiryDate < DateTime.UtcNow) return false;
             if (c.UsageLimit.HasValue && c.TimesUsed >= c.UsageLimit.Value) return false;
 
+            return true;
+        }
+
+        public async Task<bool> ApplyCouponAsync(int couponId, CancellationToken cancellationToken = default)
+        {
+            var c = await _couponRepository.GetByIdAsync(couponId, cancellationToken);
+            if (c == null) return false;
+
+            if (!c.IsActive) return false;
+            if (c.ExpiryDate < DateTime.UtcNow) return false;
+            if (c.UsageLimit.HasValue && c.TimesUsed >= c.UsageLimit.Value) return false;
+
+            c.TimesUsed++;
+            await _couponRepository.UpdateAsync(c, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
     }

@@ -1,6 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using DeliverySystem.Application.DTOs.Addresses;
 using DeliverySystem.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeliverySystem.API.Controllers
@@ -16,6 +18,7 @@ namespace DeliverySystem.API.Controllers
             _addressService = addressService;
         }
 
+        [Authorize]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUserId(string userId)
         {
@@ -23,6 +26,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(addresses);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -33,6 +37,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(address);
         }
 
+        [Authorize]
         [HttpPost("user/{userId}")]
         public async Task<IActionResult> Create(string userId, [FromBody] CreateAddressDto dto)
         {
@@ -43,6 +48,7 @@ namespace DeliverySystem.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id }, new { message = "تم إضافة العنوان بنجاح", id });
         }
 
+        [Authorize]
         [HttpPut("{id}/user/{userId}")]
         public async Task<IActionResult> Update(int id, string userId, [FromBody] UpdateAddressDto dto)
         {
@@ -56,6 +62,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(new { message = "تم تعديل العنوان بنجاح" });
         }
 
+        [Authorize]
         [HttpDelete("{id}/user/{userId}")]
         public async Task<IActionResult> Delete(int id, string userId)
         {

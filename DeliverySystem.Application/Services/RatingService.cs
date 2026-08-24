@@ -1,4 +1,8 @@
-﻿using DeliverySystem.Application.DTOs.Ratings;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using DeliverySystem.Application.DTOs.Ratings;
 using DeliverySystem.Application.Interfaces;
 using DeliverySystem.Domain.Entities;
 
@@ -15,9 +19,9 @@ namespace DeliverySystem.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<RatingDto>> GetAllRatingsAsync()
+        public async Task<IEnumerable<RatingDto>> GetAllRatingsAsync(CancellationToken cancellationToken = default)
         {
-            var ratings = await _ratingRepository.GetAllAsync();
+            var ratings = await _ratingRepository.GetAllAsync(cancellationToken);
             return ratings.Select(r => new RatingDto
             {
                 Id = r.Id,
@@ -31,9 +35,9 @@ namespace DeliverySystem.Application.Services
             });
         }
 
-        public async Task<RatingDto?> GetRatingByIdAsync(int id)
+        public async Task<RatingDto?> GetRatingByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var r = await _ratingRepository.GetByIdAsync(id);
+            var r = await _ratingRepository.GetByIdAsync(id, cancellationToken);
             if (r == null) return null;
 
             return new RatingDto
@@ -49,7 +53,24 @@ namespace DeliverySystem.Application.Services
             };
         }
 
-        public async Task<int> CreateRatingAsync(CreateRatingDto dto)
+        public async Task<IEnumerable<RatingDto>> GetRatingsByOrderIdAsync(int orderId, CancellationToken cancellationToken = default)
+        {
+            var ratings = await _ratingRepository.GetAllAsync(cancellationToken);
+            var orderRatings = ratings.Where(r => r.OrderId == orderId);
+            return orderRatings.Select(r => new RatingDto
+            {
+                Id = r.Id,
+                OrderId = r.OrderId,
+                CustomerId = r.UserId,
+                MerchantId = r.MerchantId,
+                DeliveryAgentId = r.DeliveryAgentId,
+                Score = r.Score,
+                Comment = r.Comment,
+                CreatedDate = r.CreatedDate
+            });
+        }
+
+        public async Task<int> CreateRatingAsync(CreateRatingDto dto, CancellationToken cancellationToken = default)
         {
             var rating = new Rating
             {
@@ -62,18 +83,18 @@ namespace DeliverySystem.Application.Services
                 CreatedDate = DateTime.UtcNow
             };
 
-            await _ratingRepository.AddAsync(rating);
-            await _unitOfWork.SaveChangesAsync();
+            await _ratingRepository.AddAsync(rating, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return rating.Id;
         }
 
-        public async Task<bool> DeleteRatingAsync(int id)
+        public async Task<bool> DeleteRatingAsync(int id, CancellationToken cancellationToken = default)
         {
-            var rating = await _ratingRepository.GetByIdAsync(id);
+            var rating = await _ratingRepository.GetByIdAsync(id, cancellationToken);
             if (rating == null) return false;
 
-            await _ratingRepository.DeleteAsync(rating);
-            await _unitOfWork.SaveChangesAsync();
+            await _ratingRepository.DeleteAsync(rating, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
     }

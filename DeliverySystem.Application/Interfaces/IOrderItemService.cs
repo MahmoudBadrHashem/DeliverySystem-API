@@ -1,12 +1,12 @@
-﻿using DeliverySystem.Application.DTOs.OrderItems;
+using DeliverySystem.Application.DTOs.OrderItems;
 
 namespace DeliverySystem.Application.Interfaces
 {
     public interface IOrderItemService
     {
-        Task<IEnumerable<OrderItemDto>> GetAllOrderItemsAsync();
-        Task<OrderItemDto?> GetOrderItemByIdAsync(int id);
-        Task<int> CreateOrderItemAsync(CreateOrderItemDto dto);
-        Task<bool> DeleteOrderItemAsync(int id);
+        Task<IEnumerable<OrderItemDto>> GetAllOrderItemsAsync(CancellationToken cancellationToken = default);
+        Task<OrderItemDto?> GetOrderItemByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<int> CreateOrderItemAsync(CreateOrderItemDto dto, CancellationToken cancellationToken = default);
+        Task<bool> DeleteOrderItemAsync(int id, CancellationToken cancellationToken = default);
     }
-}
+}

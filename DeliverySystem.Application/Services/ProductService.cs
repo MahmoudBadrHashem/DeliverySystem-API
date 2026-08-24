@@ -19,22 +19,19 @@ namespace DeliverySystem.Application.Services
         {
             var products = await _productRepository.GetAllAsync(cancellationToken);
 
-            // 1. Search
             if (!string.IsNullOrWhiteSpace(search))
             {
                 products = products.Where(p => p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                                               (p.Description != null && p.Description.Contains(search, StringComparison.OrdinalIgnoreCase)));
             }
 
-            // 2. Filter
             if (categoryId.HasValue)
             {
                 products = products.Where(p => p.CategoryId == categoryId.Value);
             }
 
-            int totalRecords = products.Count(); // حساب العدد الإجمالي
+            int totalRecords = products.Count();
 
-            // 3. Pagination
             var pagedData = products
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -44,7 +41,10 @@ namespace DeliverySystem.Application.Services
                     Name = p.Name,
                     Price = p.Price,
                     Description = p.Description,
-                    CategoryId = p.CategoryId
+                    CategoryId = p.CategoryId,
+                    ImageUrl = p.ImageUrl,
+                    StockQuantity = p.StockQuantity,
+                    IsAvailable = p.IsAvailable
                 })
                 .ToList();
 
@@ -62,12 +62,21 @@ namespace DeliverySystem.Application.Services
             var p = await _productRepository.GetByIdAsync(id, cancellationToken);
             if (p == null) return null;
 
-            return new ProductDto { Id = p.Id, Name = p.Name, Price = p.Price, Description = p.Description, CategoryId = p.CategoryId };
+            return new ProductDto { Id = p.Id, Name = p.Name, Price = p.Price, Description = p.Description, CategoryId = p.CategoryId, ImageUrl = p.ImageUrl, StockQuantity = p.StockQuantity, IsAvailable = p.IsAvailable };
         }
 
         public async Task<int> CreateProductAsync(CreateProductDto dto, CancellationToken cancellationToken = default)
         {
-            var product = new Product { Name = dto.Name, Price = dto.Price, Description = dto.Description, CategoryId = dto.CategoryId };
+            var product = new Product 
+            { 
+                Name = dto.Name, 
+                Price = dto.Price, 
+                Description = dto.Description, 
+                CategoryId = dto.CategoryId,
+                ImageUrl = dto.ImageUrl,
+                StockQuantity = dto.StockQuantity,
+                IsAvailable = true
+            };
             await _productRepository.AddAsync(product, cancellationToken);
             return product.Id;
         }
@@ -81,6 +90,9 @@ namespace DeliverySystem.Application.Services
             existing.Price = dto.Price;
             existing.Description = dto.Description;
             existing.CategoryId = dto.CategoryId;
+            existing.ImageUrl = dto.ImageUrl;
+            existing.StockQuantity = dto.StockQuantity;
+            existing.IsAvailable = dto.IsAvailable;
 
             await _productRepository.UpdateAsync(existing, cancellationToken);
             return true;

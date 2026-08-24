@@ -1,6 +1,5 @@
 using DeliverySystem.API.Middlewares;
 using DeliverySystem.Application.Interfaces;
-using DeliverySystem.Application.services;
 using DeliverySystem.Application.Services;
 using DeliverySystem.Infrastructure;
 using DeliverySystem.Infrastructure.EmailServices;
@@ -9,8 +8,11 @@ using DeliverySystem.Infrastructure.Persistence;
 using DeliverySystem.Infrastructure.Persistence.Identity;
 using DeliverySystem.Infrastructure.Repositories;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +23,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Dependence in injections
+// Dependency Injection
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.Configure<AdminInfoOption>(builder.Configuration.GetSection("AdminInfo"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));

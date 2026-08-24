@@ -14,5 +14,6 @@ namespace DeliverySystem.Application.Interfaces
         Task<bool> UpdateCouponAsync(int id, UpdateCouponDto dto, CancellationToken cancellationToken = default);
         Task<bool> DeleteCouponAsync(int id, CancellationToken cancellationToken = default);
         Task<bool> ValidateCouponAsync(string code, CancellationToken cancellationToken = default);
+        Task<bool> ApplyCouponAsync(int couponId, CancellationToken cancellationToken = default);
     }
 }

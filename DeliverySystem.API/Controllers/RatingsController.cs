@@ -1,5 +1,7 @@
-﻿using DeliverySystem.Application.DTOs.Ratings;
+﻿using System.Threading.Tasks;
+using DeliverySystem.Application.DTOs.Ratings;
 using DeliverySystem.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeliverySystem.API.Controllers
@@ -30,6 +32,15 @@ namespace DeliverySystem.API.Controllers
             return Ok(rating);
         }
 
+        [Authorize]
+        [HttpGet("order/{orderId}")]
+        public async Task<IActionResult> GetByOrderId(int orderId)
+        {
+            var ratings = await _ratingService.GetRatingsByOrderIdAsync(orderId);
+            return Ok(ratings);
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateRatingDto dto)
         {
@@ -38,6 +49,7 @@ namespace DeliverySystem.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id }, new { message = "تم إضافة التقييم بنجاح", id });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

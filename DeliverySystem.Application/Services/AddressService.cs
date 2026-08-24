@@ -11,15 +11,17 @@ namespace DeliverySystem.Application.Services
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AddressService(IAddressRepository addressRepository)
+        public AddressService(IAddressRepository addressRepository, IUnitOfWork unitOfWork)
         {
             _addressRepository = addressRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<AddressDto>> GetAddressesByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
-            var addresses = await _addressRepository.GetAllAsync();
+            var addresses = await _addressRepository.GetAllAsync(cancellationToken);
             return addresses
                 .Where(a => a.UserId == userId)
                 .Select(a => new AddressDto
@@ -40,7 +42,7 @@ namespace DeliverySystem.Application.Services
 
         public async Task<AddressDto?> GetAddressByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var a = await _addressRepository.GetByIdAsync(id);
+            var a = await _addressRepository.GetByIdAsync(id, cancellationToken);
             if (a == null) return null;
 
             return new AddressDto
@@ -73,13 +75,14 @@ namespace DeliverySystem.Application.Services
                 Longitude = dto.Longitude
             };
 
-            await _addressRepository.AddAsync(address);
+            await _addressRepository.AddAsync(address, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return address.Id;
         }
 
         public async Task<bool> UpdateAddressAsync(int id, string userId, UpdateAddressDto dto, CancellationToken cancellationToken = default)
         {
-            var a = await _addressRepository.GetByIdAsync(id);
+            var a = await _addressRepository.GetByIdAsync(id, cancellationToken);
             if (a == null || a.UserId != userId) return false;
 
             a.StreetName = dto.StreetName;
@@ -91,16 +94,18 @@ namespace DeliverySystem.Application.Services
             a.Latitude = dto.Latitude;
             a.Longitude = dto.Longitude;
 
-            await _addressRepository.UpdateAsync(a);
+            await _addressRepository.UpdateAsync(a, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
 
         public async Task<bool> DeleteAddressAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
-            var a = await _addressRepository.GetByIdAsync(id);
+            var a = await _addressRepository.GetByIdAsync(id, cancellationToken);
             if (a == null || a.UserId != userId) return false;
 
-            await _addressRepository.DeleteAsync(a);
+            await _addressRepository.DeleteAsync(a, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
     }

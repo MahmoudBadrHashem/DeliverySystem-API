@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DeliverySystem.API.Controllers
 {
@@ -10,7 +11,6 @@ namespace DeliverySystem.API.Controllers
 
         public BranchesController(IBranchService branchService)
         {
-
             _branchService = branchService;
         }
 
@@ -24,7 +24,6 @@ namespace DeliverySystem.API.Controllers
             var branches = await _branchService.GetAllBranchesAsync(search, merchantId, pageNumber, pageSize);
             return Ok(branches);
         }
-        //=================================================== 
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -34,7 +33,6 @@ namespace DeliverySystem.API.Controllers
             return Ok(branch);
         }
 
-        //=================================================== 
         [HttpGet("merchant/{merchantId}")]
         public async Task<IActionResult> GetByMerchant(int merchantId)
         {
@@ -42,7 +40,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(branches);
         }
 
-        //=================================================== 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBranchDto dto)
         {
@@ -53,7 +51,7 @@ namespace DeliverySystem.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id }, new { message = "تم إضافة الفرع بنجاح", id });
         }
 
-        //=================================================== 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateBranchDto dto)
         {
@@ -66,7 +64,16 @@ namespace DeliverySystem.API.Controllers
             return Ok(new { message = "تم تعديل الفرع بنجاح" });
         }
 
-        //=================================================== 
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] bool isActive)
+        {
+            var result = await _branchService.UpdateBranchStatusAsync(id, isActive);
+            if (!result) return NotFound(new { message = "الفرع غير موجود" });
+            return Ok(new { message = "تم تحديث حالة الفرع بنجاح" });
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

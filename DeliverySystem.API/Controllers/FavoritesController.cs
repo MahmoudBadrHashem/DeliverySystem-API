@@ -1,5 +1,8 @@
-﻿using DeliverySystem.Application.DTOs.Favorites;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
+using DeliverySystem.Application.DTOs.Favorites;
 using DeliverySystem.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeliverySystem.API.Controllers
@@ -15,20 +18,32 @@ namespace DeliverySystem.API.Controllers
             _favoriteService = favoriteService;
         }
 
-        [HttpGet("customer/{customerId}")]
-        public async Task<IActionResult> GetByCustomer(int customerId)
+        [Authorize]
+        [HttpGet("my-favorites")]
+        public async Task<IActionResult> GetMyFavorites()
         {
+            var userId = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                ?? throw new UnauthorizedAccessException("Invalid token ");
+            if (!int.TryParse(userId, out int customerId))
+                return BadRequest(new { message = "معرف المستخدم غير صالح" });
+
             var favorites = await _favoriteService.GetCustomerFavoritesAsync(customerId);
             return Ok(favorites);
         }
 
-        //=================================================== 
-
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateFavoriteDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var userId = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                ?? throw new UnauthorizedAccessException("Invalid token ");
+            if (!int.TryParse(userId, out int customerId))
+                return BadRequest(new { message = "معرف المستخدم غير صالح" });
+
+            dto.CustomerId = customerId;
 
             var result = await _favoriteService.AddToFavoritesAsync(dto);
             if (!result)
@@ -37,11 +52,15 @@ namespace DeliverySystem.API.Controllers
             return Ok(new { message = "تمت الإضافة إلى المفضلة بنجاح" });
         }
 
-        //=================================================== 
-
-        [HttpDelete("customer/{customerId}/product/{productId}")]
-        public async Task<IActionResult> Remove(int customerId, int productId)
+        [Authorize]
+        [HttpDelete("product/{productId}")]
+        public async Task<IActionResult> Remove(int productId)
         {
+            var userId = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                ?? throw new UnauthorizedAccessException("Invalid token ");
+            if (!int.TryParse(userId, out int customerId))
+                return BadRequest(new { message = "معرف المستخدم غير صالح" });
+
             var result = await _favoriteService.RemoveFromFavoritesAsync(customerId, productId);
             if (!result)
                 return NotFound(new { message = "لم يتم العثور على المنتج في المفضلة" });

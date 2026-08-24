@@ -11,7 +11,10 @@ namespace DeliverySystem.Application.DTOs.Products
                 Name = dto.Name,
                 Description = dto.Description,
                 Price = dto.Price,
-                CategoryId = dto.CategoryId
+                CategoryId = dto.CategoryId,
+                ImageUrl = dto.ImageUrl,
+                StockQuantity = dto.StockQuantity,
+                IsAvailable = true
             };
         }
 
@@ -23,7 +26,10 @@ namespace DeliverySystem.Application.DTOs.Products
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                CategoryId = product.CategoryId
+                CategoryId = product.CategoryId,
+                ImageUrl = product.ImageUrl,
+                StockQuantity = product.StockQuantity,
+                IsAvailable = product.IsAvailable
             };
         }
     }

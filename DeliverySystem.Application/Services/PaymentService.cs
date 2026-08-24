@@ -1,4 +1,6 @@
-﻿using DeliverySystem.Application.DTOs.Payments;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using DeliverySystem.Application.DTOs.Payments;
 using DeliverySystem.Application.Interfaces;
 using DeliverySystem.Domain.Entities;
 using DeliverySystem.Domain.Enums;
@@ -16,9 +18,9 @@ namespace DeliverySystem.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<PaymentDto>> GetAllPaymentsAsync()
+        public async Task<IEnumerable<PaymentDto>> GetAllPaymentsAsync(CancellationToken cancellationToken = default)
         {
-            var payments = await _paymentRepository.GetAllAsync();
+            var payments = await _paymentRepository.GetAllAsync(cancellationToken);
             return payments.Select(p => new PaymentDto
             {
                 Id = p.Id,
@@ -31,9 +33,9 @@ namespace DeliverySystem.Application.Services
             });
         }
 
-        public async Task<PaymentDto?> GetPaymentByIdAsync(int id)
+        public async Task<PaymentDto?> GetPaymentByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var p = await _paymentRepository.GetByIdAsync(id);
+            var p = await _paymentRepository.GetByIdAsync(id, cancellationToken);
             if (p == null) return null;
 
             return new PaymentDto
@@ -48,7 +50,24 @@ namespace DeliverySystem.Application.Services
             };
         }
 
-        public async Task<int> CreatePaymentAsync(CreatePaymentDto dto)
+        public async Task<PaymentDto?> GetPaymentByOrderIdAsync(int orderId, CancellationToken cancellationToken = default)
+        {
+            var p = await _paymentRepository.GetByOrderIdAsync(orderId, cancellationToken);
+            if (p == null) return null;
+
+            return new PaymentDto
+            {
+                Id = p.Id,
+                OrderId = p.OrderId,
+                Amount = p.Amount,
+                Method = p.Method.ToString(),
+                TransactionId = p.TransactionId,
+                Status = p.Status.ToString(),
+                PaymentDate = p.PaymentDate
+            };
+        }
+
+        public async Task<int> CreatePaymentAsync(CreatePaymentDto dto, CancellationToken cancellationToken = default)
         {
             var payment = new Payment
             {
@@ -58,14 +77,14 @@ namespace DeliverySystem.Application.Services
                 Status = PaymentStatus.Pending
             };
 
-            await _paymentRepository.AddAsync(payment);
-            await _unitOfWork.SaveChangesAsync();
+            await _paymentRepository.AddAsync(payment, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return payment.Id;
         }
 
-        public async Task<bool> UpdatePaymentStatusAsync(int id, UpdatePaymentStatusDto dto)
+        public async Task<bool> UpdatePaymentStatusAsync(int id, UpdatePaymentStatusDto dto, CancellationToken cancellationToken = default)
         {
-            var payment = await _paymentRepository.GetByIdAsync(id);
+            var payment = await _paymentRepository.GetByIdAsync(id, cancellationToken);
             if (payment == null) return false;
 
             payment.Status = (PaymentStatus)dto.Status;
@@ -75,8 +94,8 @@ namespace DeliverySystem.Application.Services
             if (payment.Status == PaymentStatus.Paid)
                 payment.PaymentDate = DateTime.UtcNow;
 
-            await _paymentRepository.UpdateAsync(payment);
-            await _unitOfWork.SaveChangesAsync();
+            await _paymentRepository.UpdateAsync(payment, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
     }

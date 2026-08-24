@@ -1,4 +1,8 @@
-﻿using DeliverySystem.Application.DTOs.OrderItems;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using DeliverySystem.Application.DTOs.OrderItems;
 using DeliverySystem.Application.Interfaces;
 using DeliverySystem.Domain.Entities;
 
@@ -15,9 +19,9 @@ namespace DeliverySystem.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<OrderItemDto>> GetAllOrderItemsAsync()
+        public async Task<IEnumerable<OrderItemDto>> GetAllOrderItemsAsync(CancellationToken cancellationToken = default)
         {
-            var items = await _orderItemRepository.GetAllAsync();
+            var items = await _orderItemRepository.GetAllAsync(cancellationToken);
             return items.Select(i => new OrderItemDto
             {
                 Id = i.Id,
@@ -29,9 +33,9 @@ namespace DeliverySystem.Application.Services
             });
         }
 
-        public async Task<OrderItemDto?> GetOrderItemByIdAsync(int id)
+        public async Task<OrderItemDto?> GetOrderItemByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var i = await _orderItemRepository.GetByIdAsync(id);
+            var i = await _orderItemRepository.GetByIdAsync(id, cancellationToken);
             if (i == null) return null;
 
             return new OrderItemDto
@@ -45,7 +49,7 @@ namespace DeliverySystem.Application.Services
             };
         }
 
-        public async Task<int> CreateOrderItemAsync(CreateOrderItemDto dto)
+        public async Task<int> CreateOrderItemAsync(CreateOrderItemDto dto, CancellationToken cancellationToken = default)
         {
             var item = new OrderItem
             {
@@ -56,18 +60,18 @@ namespace DeliverySystem.Application.Services
                 Subtotal = dto.Quantity * dto.UnitPrice
             };
 
-            await _orderItemRepository.AddAsync(item);
-            await _unitOfWork.SaveChangesAsync();
+            await _orderItemRepository.AddAsync(item, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return item.Id;
         }
 
-        public async Task<bool> DeleteOrderItemAsync(int id)
+        public async Task<bool> DeleteOrderItemAsync(int id, CancellationToken cancellationToken = default)
         {
-            var item = await _orderItemRepository.GetByIdAsync(id);
+            var item = await _orderItemRepository.GetByIdAsync(id, cancellationToken);
             if (item == null) return false;
 
-            await _orderItemRepository.DeleteAsync(item);
-            await _unitOfWork.SaveChangesAsync();
+            await _orderItemRepository.DeleteAsync(item, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
     }

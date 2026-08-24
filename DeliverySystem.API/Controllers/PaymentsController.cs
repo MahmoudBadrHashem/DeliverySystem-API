@@ -1,5 +1,7 @@
-﻿using DeliverySystem.Application.DTOs.Payments;
+﻿using System.Threading.Tasks;
+using DeliverySystem.Application.DTOs.Payments;
 using DeliverySystem.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeliverySystem.API.Controllers
@@ -15,6 +17,7 @@ namespace DeliverySystem.API.Controllers
             _paymentService = paymentService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,6 +25,7 @@ namespace DeliverySystem.API.Controllers
             return Ok(payments);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -30,6 +34,16 @@ namespace DeliverySystem.API.Controllers
             return Ok(payment);
         }
 
+        [Authorize]
+        [HttpGet("order/{orderId}")]
+        public async Task<IActionResult> GetByOrderId(int orderId)
+        {
+            var payment = await _paymentService.GetPaymentByOrderIdAsync(orderId);
+            if (payment == null) return NotFound(new { message = "الدفعة غير موجودة لهذا الأوردر" });
+            return Ok(payment);
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePaymentDto dto)
         {
@@ -38,6 +52,7 @@ namespace DeliverySystem.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id }, new { message = "تم إنشاء الدفعة بنجاح", id });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdatePaymentStatusDto dto)
         {
