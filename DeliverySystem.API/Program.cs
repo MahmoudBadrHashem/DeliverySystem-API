@@ -60,6 +60,8 @@ builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<ICustomerOrderService, CustomerOrderService>();
+builder.Services.AddScoped<ICustomerRatingService, CustomerRatingService>();
 
 //== Dependency Injection for Repositories
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
